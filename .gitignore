@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files — copy .env.example and fill in your values
+.env
+.env.local
+.env.*.local
+
+# MaxMind GeoIP databases — download from https://dev.maxmind.com/geoip/geolite2-free-geolocation-data
+*.mmdb
+maxmind/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+.idea/
+
+# Tool artifacts
+.playwright-mcp/
+.claude/
+
+# Claude Code internal
+CLAUDE.md
