@@ -31,9 +31,11 @@ export function OAuthCallbackPage() {
     }
 
     handleOAuthCallback()
-      .then((user) => {
+      .then(({ user, needsChallenge }) => {
         if (user) {
           navigate('/dashboard', { replace: true });
+        } else if (needsChallenge) {
+          navigate('/auth/challenge', { replace: true });
         } else {
           navigate('/login', { replace: true });
         }

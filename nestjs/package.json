@@ -12,8 +12,11 @@
   "dependencies": {
     "@nauth-toolkit/database-typeorm-postgres": "^0.1.132",
     "@nauth-toolkit/email-console": "^0.1.132",
+    "@nauth-toolkit/mfa-email": "^0.1.132",
+    "@nauth-toolkit/mfa-sms": "^0.1.132",
     "@nauth-toolkit/mfa-totp": "^0.1.132",
     "@nauth-toolkit/nestjs": "^0.1.132",
+    "@nauth-toolkit/sms-console": "^0.1.132",
     "@nauth-toolkit/social-google": "^0.1.132",
     "@nauth-toolkit/storage-database": "^0.1.132",
     "@nestjs/common": "^11.0.0",

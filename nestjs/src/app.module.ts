@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { getNAuthEntities } from '@nauth-toolkit/database-typeorm-postgres';
+import { getNAuthEntities, getNAuthTransientStorageEntities } from '@nauth-toolkit/database-typeorm-postgres';
 
 /**
  * Root application module.
@@ -21,7 +21,7 @@ import { getNAuthEntities } from '@nauth-toolkit/database-typeorm-postgres';
       username: process.env.DB_USERNAME as string,
       password: process.env.DB_PASSWORD as string,
       database: process.env.DB_DATABASE ?? 'nauth_sample',
-      entities: [...getNAuthEntities()],
+      entities: [...getNAuthEntities(), ...getNAuthTransientStorageEntities()],
       synchronize: process.env.NODE_ENV !== 'production', // Auto-create tables in dev
       logging: false,
     }),

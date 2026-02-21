@@ -26,10 +26,7 @@ async function bootstrap() {
   app.useGlobalPipes(new NAuthValidationPipe());
 
   app.enableCors({
-    origin: [
-      process.env.FRONTEND_BASE_URL || 'http://localhost:4200',
-      'http://localhost:3000',
-    ],
+    origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Device-Id', 'x-csrf-token', 'x-device-token'],

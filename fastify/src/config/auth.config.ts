@@ -75,22 +75,7 @@ export const authConfig: NAuthConfig = {
     enforcement: 'OPTIONAL',
     gracePeriod: 2,
     requireForSocialLogin: false,
-    allowedMethods: [MFAMethod.SMS, MFAMethod.EMAIL, MFAMethod.TOTP, MFAMethod.PASSKEY],
-    issuer: 'Nauth App',
-    totp: {
-      window: 1,
-      stepSeconds: 30,
-      digits: 6,
-      algorithm: 'sha1',
-    },
-    passkey: {
-      rpName: process.env.APP_NAME || 'Nauth App',
-      rpId: process.env.PASSKEY_RP_ID || 'localhost',
-      origin: getAllowedOrigins(),
-      timeout: parseInt(process.env.PASSKEY_TIMEOUT || '60000', 10),
-      userVerification: 'preferred',
-      authenticatorAttachment: undefined,
-    },
+    allowedMethods: [MFAMethod.EMAIL, MFAMethod.SMS],
     rememberDevices: 'user_opt_in',
     rememberDeviceDays: 30,
     bypassMFAForTrustedDevices: true,
@@ -108,9 +93,9 @@ export const authConfig: NAuthConfig = {
     passwordReset: {
       codeLength: 6,
       expiresIn: 900,
-      rateLimitMax: 3,
-      rateLimitWindow: 3600,
-      maxAttempts: 3,
+      rateLimitMax: 30000,
+      rateLimitWindow: 300,
+      maxAttempts: 1000,
     },
   },
 
@@ -183,7 +168,7 @@ export const authConfig: NAuthConfig = {
   },
 
   challenge: {
-    maxAttempts: 3,
+    maxAttempts: 100,
   },
 
   auditLogs: { enabled: true, fireAndForget: true },

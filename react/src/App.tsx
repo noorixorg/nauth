@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { ChallengePage } from './pages/ChallengePage';
+import { MfaSetupPage } from './pages/MfaSetupPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { OAuthCallbackPage } from './pages/OAuthCallbackPage';
 
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/auth/challenge" element={<ChallengePage />} />
+        <Route path="/auth/mfa-setup" element={<MfaSetupPage />} />
         <Route path="/auth/callback" element={<OAuthCallbackPage />} />
         <Route
           path="/dashboard"

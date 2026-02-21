@@ -11,6 +11,7 @@ import {
   type AuthResponse,
   type ChallengeResponse,
   type SignupRequest,
+  type GetSetupDataResponse,
 } from '@nauth-toolkit/client';
 import authConfig from '../config/auth.config';
 import { RefreshingFetchAdapter } from '../lib/authHttpAdapter';
@@ -33,11 +34,16 @@ export interface AuthContextValue {
   logout: () => Promise<void>;
   respondToChallenge: (response: ChallengeResponse) => Promise<AuthResponse>;
   resendCode: (session: string) => Promise<{ destination: string }>;
+  getSetupData: (session: string, method: string) => Promise<GetSetupDataResponse>;
 
   // Social
   loginWithGoogle: () => Promise<void>;
-  /** Call this on the /auth/callback page after the OAuth redirect. */
-  handleOAuthCallback: () => Promise<AuthUser | null>;
+  /**
+   * Call this on the /auth/callback page after the OAuth redirect.
+   * Returns { user } on success, { needsChallenge: true } when MFA is required,
+   * or { user: null } if authentication failed.
+   */
+  handleOAuthCallback: () => Promise<{ user: AuthUser | null; needsChallenge: boolean }>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -78,6 +84,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubSuccess = client.on('auth:success', () => {
       if (!mounted) return;
       setChallenge(null);
+      // Set user immediately from SDK cache so ProtectedRoute sees isAuthenticated=true
+      // before any navigation happens, then update with the full server profile.
+      const currentUser = client.getCurrentUser();
+      if (currentUser) setUser(currentUser);
       client.getProfile().then(
         (profile) => {
           if (mounted) setUser(profile);
@@ -151,6 +161,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resendCode = (session: string) => client.resendCode(session);
 
+  const getSetupData = (session: string, method: string) =>
+    client.getSetupData(session, method as Parameters<typeof client.getSetupData>[1]);
+
   const loginWithGoogle = () =>
     client.loginWithSocial('google', {
       // Pass the full URL so the backend redirects back to whichever port this
@@ -162,28 +175,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * Completes the OAuth redirect flow on /auth/callback.
    *
-   * Cookie mode: backend already set auth cookies; we just fetch the profile.
-   * JSON mode:   backend embeds an exchangeToken in the redirect URL query
-   *              params; we exchange it for tokens.
+   * Cookie mode:  backend already set auth cookies; we just fetch the profile.
+   * Hybrid mode:  backend embeds an exchangeToken in the redirect URL; we
+   *               exchange it for tokens (or a pending MFA challenge).
    */
-  const handleOAuthCallback = async (): Promise<AuthUser | null> => {
+  const handleOAuthCallback = async (): Promise<{ user: AuthUser | null; needsChallenge: boolean }> => {
     const params = new URLSearchParams(window.location.search);
     const error = params.get('error');
-    if (error) return null;
+    if (error) return { user: null, needsChallenge: false };
 
     const exchangeToken = params.get('exchangeToken');
 
     if (exchangeToken) {
-      // JSON token delivery mode — fetch full profile after exchange
-      await client.exchangeSocialRedirect(exchangeToken);
+      const response = await client.exchangeSocialRedirect(exchangeToken);
+      if (response.challengeName) {
+        // MFA required after social login — challenge event already fired via SDK,
+        // but sync React state here too to avoid any timing gaps.
+        setChallenge(response);
+        return { user: null, needsChallenge: true };
+      }
       const profileUser = await client.getProfile();
       setUser(profileUser);
-      return profileUser;
+      return { user: profileUser, needsChallenge: false };
     } else {
-      // Cookie mode — cookies are already set by the backend; fetch profile
+      // Cookie mode — cookies already set by backend; just fetch the profile.
       const profileUser = await client.getProfile();
       setUser(profileUser);
-      return profileUser;
+      return { user: profileUser, needsChallenge: false };
     }
   };
 
@@ -199,6 +217,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         respondToChallenge,
         resendCode,
+        getSetupData,
         loginWithGoogle,
         handleOAuthCallback,
       }}

@@ -42,6 +42,10 @@ export function ChallengePage() {
   // ctxChallenge from storage before deciding there is no challenge.
   useEffect(() => {
     if (!isLoading && !challenge) navigate('/login', { replace: true });
+    // MFA_SETUP_REQUIRED is handled by a dedicated page.
+    if (!isLoading && challenge?.challengeName === AuthChallenge.MFA_SETUP_REQUIRED) {
+      navigate('/auth/mfa-setup', { replace: true, state: { response: challenge } });
+    }
   }, [isLoading, challenge, navigate]);
 
   // Countdown timer for the resend cooldown.

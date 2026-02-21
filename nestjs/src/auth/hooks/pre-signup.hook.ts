@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import {
-  PreSignupHook,
+  PreSignupHook as PreSignupHookDecorator,
   IPreSignupHookProvider,
   PreSignupHookData,
   SignupDTO,
@@ -19,7 +19,7 @@ import {
  * Throw an exception here to abort the signup.
  */
 @Injectable()
-@PreSignupHook()
+@PreSignupHookDecorator()
 export class PreSignupHook implements IPreSignupHookProvider {
   private readonly logger = new Logger(PreSignupHook.name);
 
