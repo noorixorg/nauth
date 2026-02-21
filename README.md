@@ -10,11 +10,12 @@ Example applications for [nauth-toolkit](https://nauth.dev) — a platform-agnos
 
 | Example | Stack | Description |
 |---------|-------|-------------|
-| [`express/`](./express) | Express + TypeORM + PostgreSQL | REST API with email/password auth, social login, MFA |
-| [`fastify/`](./fastify) | Fastify + TypeORM + PostgreSQL | Same as Express but with Fastify adapter |
+| [`express/`](./express) | Express + TypeORM + PostgreSQL | Core auth flow — email/password, Google OAuth, TOTP MFA |
+| [`fastify/`](./fastify) | Fastify + TypeORM + PostgreSQL | Same as Express but with the Fastify adapter |
+| [`nestjs/`](./nestjs) | NestJS + TypeORM + PostgreSQL | NestJS-specific features — guards, decorators, hooks, custom email templates |
 | [`react/`](./react) | React + Vite | Frontend SPA using `@nauth-toolkit/client` |
 
-> The backend examples (Express/Fastify) pair with the React frontend. Run one backend and the React app together.
+> The backend examples (Express / Fastify / NestJS) pair with the React frontend. Run one backend and the React app together.
 
 ---
 
@@ -35,14 +36,14 @@ git clone https://github.com/noorixorg/nauth.git
 cd nauth
 ```
 
-### 2. Set up a backend (Express or Fastify)
+### 2. Set up a backend
 
 ```bash
-cd express        # or: cd fastify
+cd express        # or: cd fastify  or: cd nestjs
 cp .env.example .env
 # Edit .env with your database credentials and JWT secrets
 yarn install
-yarn dev
+yarn dev          # or for NestJS: yarn start:dev
 ```
 
 The backend starts on `http://localhost:3000`.
