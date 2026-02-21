@@ -4,14 +4,13 @@ node_modules/
 # Build output
 dist/
 
+# MaxMind GeoIP databases
+maxmind/
+
 # Environment files — copy .env.example and fill in your values
 .env
 .env.local
 .env.*.local
-
-# MaxMind GeoIP databases — download from https://dev.maxmind.com/geoip/geolite2-free-geolocation-data
-*.mmdb
-maxmind/
 
 # Logs
 *.log

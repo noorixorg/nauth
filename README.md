@@ -78,17 +78,6 @@ Each example ships with a `.env.example` file. Copy it to `.env` and fill in you
 
 ---
 
-## GeoIP (optional)
-
-The Express example includes MaxMind GeoIP support for IP-based location tracking. The `.mmdb` database files are **not included** in this repo (they require a free MaxMind account).
-
-To enable:
-1. Sign up at [maxmind.com](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data)
-2. Download `GeoLite2-City.mmdb` and `GeoLite2-Country.mmdb`
-3. Place them in `express/maxmind/`
-
----
-
 ## Community
 
 **Questions?** Use [GitHub Discussions](https://github.com/noorixorg/nauth/discussions) — browse existing answers or start a new thread.
