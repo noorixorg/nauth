@@ -14,12 +14,8 @@ import {
   NAuth,
   FastifyAdapter,
   NAuthInstance,
-  SocialRedirectHandler,
 } from '@nauth-toolkit/core';
 import { getNAuthEntities, getNAuthTransientStorageEntities } from '@nauth-toolkit/database-typeorm-postgres';
-// SocialAuthStateStore is an internal class — accessed via the internal entry point
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { SocialAuthStateStore } = require('@nauth-toolkit/core/internal');
 
 import { authConfig } from './config/auth.config';
 import { registerAuthRoutes, registerMobileAuthRoutes } from './routes/auth.routes';
@@ -58,19 +54,6 @@ async function main(): Promise<void> {
 
   console.log('nauth-toolkit initialized');
 
-  // SocialRedirectHandler
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const storageAdapter = authConfig.storageAdapter!;
-  const socialStateStore = new SocialAuthStateStore(storageAdapter, nauth.logger);
-  const socialRedirect = new SocialRedirectHandler(
-    nauth.config,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (nauth as any)['socialProviderRegistry'],
-    socialStateStore,
-    storageAdapter,
-    nauth.logger,
-  );
-
   // ── Fastify App ───────────────────────────────────────────────────────────────
 
   const fastify = Fastify({ logger: false });
@@ -106,7 +89,7 @@ async function main(): Promise<void> {
 
   await registerAuthRoutes(fastify, typedNauth);
   await registerMobileAuthRoutes(fastify, typedNauth);
-  await registerSocialRoutes(fastify, typedNauth, socialRedirect);
+  await registerSocialRoutes(fastify, typedNauth, nauth.socialRedirect!);
 
   // ── Error Handler (MUST BE LAST) ──────────────────────────────────────────────
   fastify.setErrorHandler(errorHandler);

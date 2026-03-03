@@ -14,12 +14,8 @@ import {
   ExpressAdapter,
   ExpressMiddlewareType,
   NAuthInstance,
-  SocialRedirectHandler,
 } from '@nauth-toolkit/core';
 import { getNAuthEntities, getNAuthTransientStorageEntities } from '@nauth-toolkit/database-typeorm-postgres';
-// SocialAuthStateStore is an internal class — accessed via the internal entry point
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { SocialAuthStateStore } = require('@nauth-toolkit/core/internal');
 
 import { authConfig } from './config/auth.config';
 import { createAuthRoutes, createMobileAuthRoutes } from './routes/auth.routes';
@@ -61,20 +57,6 @@ async function main(): Promise<void> {
 
   console.log('nauth-toolkit initialized');
 
-  // SocialRedirectHandler — reuses the same DatabaseStorageAdapter from authConfig
-  // (NAuth.create() has already wired it with the DataSource repositories above).
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const storageAdapter = authConfig.storageAdapter!;
-  const socialStateStore = new SocialAuthStateStore(storageAdapter, nauth.logger);
-  const socialRedirect = new SocialRedirectHandler(
-    nauth.config,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (nauth as any)['socialProviderRegistry'],
-    socialStateStore,
-    storageAdapter,
-    nauth.logger,
-  );
-
   // ── Express App ───────────────────────────────────────────────────────────────
 
   const app = express();
@@ -110,7 +92,7 @@ async function main(): Promise<void> {
 
   app.use('/auth', createAuthRoutes(typedNauth));
   app.use('/mobile/auth', createMobileAuthRoutes(typedNauth));
-  app.use('/auth/social', createSocialRoutes(typedNauth, socialRedirect));
+  app.use('/auth/social', createSocialRoutes(typedNauth, nauth.socialRedirect!));
 
   // ── Error Handler (MUST BE LAST) ──────────────────────────────────────────────
   app.use(errorHandler);
